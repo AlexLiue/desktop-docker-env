@@ -1,10 +1,11 @@
-FROM mysql/mysql-server:8.0.28
+FROM ubuntu:20.04
 
-# Config files
-COPY sources/config/my.cnf /etc/my.cnf.d
-RUN echo '!includedir /etc/my.cnf.d' >>/etc/my.cnf
+MAINTAINER "pcliu"
 
-ENTRYPOINT ["/entrypoint.sh"]
-HEALTHCHECK CMD /healthcheck.sh
-EXPOSE 3306 33060 33061
-CMD ["mysqld"]
+WORKDIR /opt
+
+ADD . /opt
+
+RUN ["sh", "/opt/install.sh"]
+
+ENTRYPOINT ["./entrypoint.sh"]
