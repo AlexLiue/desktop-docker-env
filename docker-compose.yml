@@ -1,0 +1,59 @@
+networks:
+  docker-bridge:
+    external: false
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.100.0/24
+          gateway: 192.168.100.1
+
+services:
+  mysql:
+    build:
+      context: mysql
+    container_name: mysql
+    hostname: mysql
+    networks:
+      docker-bridge:
+        ipv4_address: 192.168.100.10
+    extra_hosts:
+      - "mysql:192.168.100.10"
+      - "zoo:192.168.100.20"
+      - "kafka:192.168.100.30"
+      - "hadoop:192.168.100.60"
+      - "python:192.168.100.100"
+    environment:
+      - MYSQL_ROOT_PASSWORD=alex
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_DATABASE=hive
+      - MYSQL_USER=hive
+      - MYSQL_PASSWORD=alex
+    ports:
+      - "3306:3306"
+      - "33060:33060"
+      - "33061:33061"
+    volumes:
+      - /Works/Docker/Containers/mysql-8/var/lib/mysql:/var/lib/mysql
+      - /Works/Docker/Containers/mysql-8/etc/mysql/conf.d:/etc/mysql/conf.d
+
+  python:
+    build:
+      context: python
+    container_name: python
+    hostname: python
+    networks:
+      docker-bridge:
+        ipv4_address: 192.168.100.100
+    extra_hosts:
+      - "mysql:192.168.100.10"
+      - "zoo:192.168.100.20"
+      - "kafka:192.168.100.30"
+      - "hadoop:192.168.100.60"
+      - "python:192.168.100.100"
+    environment:
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/anaconda/anaconda3/bin
+    ports:
+      - "6022:22"
+      - "8888:8888"
+
